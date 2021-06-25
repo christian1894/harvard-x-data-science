@@ -72,9 +72,3 @@ NHANES %>%
   summarize(average = mean(BPSysAve, na.rm = TRUE),
             standard_deviation = sd(BPSysAve, na.rm = TRUE)) %>%
   arrange(average)
-
-
-
-
-
-
