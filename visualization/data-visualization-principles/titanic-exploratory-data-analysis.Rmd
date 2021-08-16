@@ -1,0 +1,174 @@
+---
+title: "Titanic Survival"
+output: html_notebook
+code_folding: hide
+---
+
+Background
+
+The Titanic was a British ocean liner that struck an iceberg and sunk on its maiden voyage in 1912 from the United Kingdom to New York. More than 1,500 of the estimated 2,224 passengers and crew died in the accident, making this one of the largest maritime disasters ever outside of war. The ship carried a wide range of passengers of all ages and both genders, from luxury travelers in first-class to immigrants in the lower classes. However, not all passengers were equally likely to survive the accident. We use real data about a selection of 891 passengers to learn who was on the Titanic and which passengers were more likely to survive.
+
+```{r} 
+options(digits = 3)    # report 3 significant digits
+library(tidyverse)
+library(dslabs)
+library(titanic)
+
+titanic <- titanic_train %>%
+    select(Survived, Pclass, Sex, Age, SibSp, Parch, Fare) %>%
+    mutate(Survived = factor(Survived),
+           Pclass = factor(Pclass),
+           Sex = factor(Sex))
+```
+*Main Variable Types*
+
+```{r, echo=FALSE} 
+# non-ordinal categorical
+unique(titanic$Survived)
+# ordinal categorical
+unique(titanic$Pclass)
+# non-ordinal categorical
+unique(titanic$Sex)
+# discrete
+unique(titanic$SibSp)
+# discrete
+unique(titanic$Parch)
+# continuous
+unique(titanic$Fare)
+```
+* Survived: Non-ordinal categorical
+
+* Passenger Class: Ordinal categorical
+
+* Sex: Non-ordinal categorical
+
+* Number of Siblings/Spouses Aboard: Discrete
+
+* Number of Parents/Children Aboard: Discrete
+
+* Fare: Continuous
+
+Demographics of Titanic Passengers 
+Density plot by age
+```{r}
+# Density plot by age
+titanic %>% filter(!is.na(Age)) %>% ggplot(aes(Age)) + geom_density()
+```
+Density plot by age grouped by sex
+```{r}
+# Density plot by age grouped by sex
+titanic %>% filter(!is.na(Age)) %>% ggplot(aes(Age, color = Sex)) + geom_density()
+```
+
+Passenger count
+```{r}
+# Passenger Count
+titanic %>% ggplot(aes(Sex)) + geom_bar()
+```
+Passenger count by age
+```{r}
+# Passenger Count grouped by age
+titanic %>% filter(!is.na(Age)) %>% ggplot(aes(Age, fill = Sex, color = Sex)) + geom_histogram(alpha = 0.25, bins = 16)
+```
+General findings: 
+* Males and females had the same general shape of age distribution
+* The distribution appears to be bimodal, one node around 25 years of age and another at 5 years of age.
+* There were more male than female passengers
+* The proportion of males age 18-35 was higher than the proportion of females age 18-35. 
+* The proportion of females under age 17 was higher than the proportion of males under age 17. 
+* The proportion at 40 years old is mostly female
+
+QQ-plot of Age Distribution 
+
+```{r}
+# QQ-plot
+params <- titanic %>%
+    filter(!is.na(Age)) %>%
+    summarize(mean = mean(Age), sd = sd(Age))
+
+titanic %>% filter(!is.na(Age)) %>% ggplot(aes(sample = Age)) + geom_qq(dparams = params) + geom_abline()
+```
+Survival Count
+```{r}
+# Survived bar plot
+survived_label = c("No", "Yes")
+titanic %>% ggplot(aes(x = Survived)) + geom_bar() + scale_x_discrete(labels = survived_label)
+```
+
+Survival by Sex 
+```{r}
+# Survived & Sex bar plots
+survived_labels = c("No", "Yes")
+titanic %>% ggplot(aes(x = Survived, fill = Sex)) + geom_bar(position = position_dodge()) + scale_x_discrete(labels = survived_labels)
+```
+
+General findings
+* Less than half of the passengers survived
+* Most of the survivors were female
+* Most males did not survive
+* Most females survived
+
+Survival by Age 
+
+```{r}
+# density plot by age
+titanic %>% filter(!is.na(Age)) %>% ggplot(aes(Age, color = Survived)) + geom_freqpoly() + scale_color_discrete(labels = survived_labels)
+```
+```{r}
+# density plot by age
+titanic %>% filter(!is.na(Age)) %>% ggplot(aes(Age, color = Survived)) + geom_density() + scale_color_discrete(labels = survived_labels)
+```
+
+Findings:
+* Passengers in the < 8 years age group had the highest survival rate.
+* Passengers in the 20-30 years age group had the highest death count.
+* Passengers in the 70-80 years age group had the highest death probability.
+
+
+Survival by Fare
+```{r}
+# Fare boxplot by survival
+titanic %>% filter(Fare != 0) %>% ggplot(aes(x = Survived, y = Fare, fill = Survived)) + geom_boxplot() + scale_y_continuous(trans = "log2") + scale_fill_discrete(labels = survived_labels) + geom_jitter(alpha = 0.2)
+```
+
+Findings: 
+* Passengers who survived generally paid a higher fare.
+* The interquartile range was bigger for passengers who survived
+* The Median fare was lower for passengers who did not survive.
+* 3 passengers paid a fare of around 500 and survived.
+* Most passengers who paid the cheapest fare(8) did not survive.
+
+Survival by Passenger Class 
+```{r}
+# Passenger class by survival barplot
+titanic %>% ggplot(aes(Pclass, fill = Survived)) + geom_bar(position = "dodge", alpha = 0.7) + scale_fill_discrete(labels = survived_labels)
+```
+```{r}
+# Passenger class by survival barplot with relative proportions
+titanic %>% ggplot(aes(Pclass, fill = Survived)) + geom_bar(position = position_fill(), alpha = 0.7) + scale_fill_discrete(labels = survived_labels)
+```
+```{r}
+# Survival by passenger class barplot
+titanic %>% ggplot(aes(Survived, fill = Pclass)) + geom_bar(position = position_fill(), alpha = 0.7) + scale_x_discrete(labels = survived_labels)
+```
+Findings: 
+* There were more Third class passengers than first and second class passengers combined.
+* By count there were more third class passengers, followed by first class and lastly second class.
+* Survival proportion was highest for first class passengers, followed by second class passengers and then third class passengers.
+* Most passengers in the first class survived, this did not apply for other classes.
+* The majority of passengers that did not survive were from the third class.
+
+Survival by Age, Sex and Passenger Class
+```{r}
+# Age density by survival status
+facet_rows = c("Sex", "Pclass")
+density_plot = titanic %>% filter(!is.na(Age))%>% ggplot(aes(Age, color = Survived)) + geom_freqpoly(bins = 30) + scale_color_discrete(labels = survived_labels)
+density_plot + facet_grid(rows = facet_rows)
+```
+Findings:
+* The largest group of passengers was third class males.
+* Age and gender distributions are not the same passenger classes.
+* Most first and second class females survived.
+* Almost all second class males died with the exception of children
+
+
