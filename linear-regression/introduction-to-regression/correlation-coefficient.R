@@ -15,6 +15,13 @@ rho = mean(scale(x)*scale(y))
 # The correlation between father and son’s heights is about 0.5:
 library(dslabs)
 library(tidyverse)
+library(HistData)
+data("GaltonFamilies")
+galton_heights = GaltonFamilies %>%
+  filter(gender == "male") %>%
+  group_by(family) %>%
+  ungroup() %>%
+  summarize(father, son = childHeight)
 galton_heights %>%
   summarize(rho = cor(father, son)) %>%
   pull(rho)

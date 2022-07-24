@@ -44,8 +44,7 @@ galton_heights = GaltonFamilies %>%
   group_by(family) %>%
   sample_n(1) %>%
   ungroup() %>%
-  select(father, childHeight) %>%
-  rename(son = childHeight)
+  summarize(father, son = childHeight)
 
 # Suppose we were asked to summarize the father and son data. 
 # Since both distributions are well approximated by the normal
