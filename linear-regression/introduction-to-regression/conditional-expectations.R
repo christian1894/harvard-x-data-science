@@ -105,6 +105,17 @@ galton_heights %>%
 # If we take into account that these averages are random variables
 # with standard errors, the data is consistent with these points 
 # following a straight line:
+galton_heights %>%
+  mutate(father = round(father)) %>%
+  group_by(father) %>%
+  summarize(son = mean(son)) %>%
+  ggplot(aes(father, son)) +
+  geom_point()
 
-
-
+# The fact that these conditional averages follow a line is not 
+# a coincidence. In the next section, we explain that the line 
+# these averages follow is what we call the regression line, 
+# which improves the precision of our estimates. However, 
+# it is not always appropriate to estimate conditional 
+# expectations with the regression line so we also describe 
+# Galton’s theoretical justification for using the regression line.
