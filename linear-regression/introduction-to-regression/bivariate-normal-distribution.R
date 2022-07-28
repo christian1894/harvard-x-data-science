@@ -48,3 +48,25 @@ galton_heights %>%
   ggplot(aes(sample = son)) +
   geom_qq() +
   facet_wrap(~z_father)
+
+# Now we come back to defining correlation. Galton used mathematical 
+# statistics to demonstrate that, when two variables follow a 
+# bivariate normal distribution, computing the regression line
+# is equivalent to computing conditional expectations. We don’t 
+# show the derivation here, but we can show that under this 
+# assumption, for any given value of x, the expected value of 
+# the Y in pairs for which X=x is:
+# E(Y|X=x)=μY+ρ(X−μX/σX)σY
+# This is the regression line, with slope:
+# ρ(σY/σX)
+# and intercept μy−mμX. It is equivalent to the regression 
+# equation we showed earlier which can be written like this:
+# E(Y∣X=x)−μY/σY=ρ(x−μX/σX)
+# This implies that, if our data is approximately bivariate, 
+# the regression line gives the conditional probability. 
+# Therefore, we can obtain a much more stable estimate of the
+# conditional expectation by finding the regression line and 
+# using it to predict.
+# In summary, if our data is approximately bivariate, then 
+# the conditional expectation, the best prediction of Y
+# given we know the value of X, is given by the regression line.
