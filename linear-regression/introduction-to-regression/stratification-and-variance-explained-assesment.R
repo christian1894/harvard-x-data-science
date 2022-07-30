@@ -71,3 +71,10 @@ r ^ 2 * 100
 
 Y = daughters_mean + r * ((60 - mothers_mean) / mothers_sd) * daughters_sd
 m * 60 + b
+
+x= female_heights$mother
+y = female_heights$daughter
+
+rho <- mean(scale(x) * scale(y))
+cor(x, y)
+rho
