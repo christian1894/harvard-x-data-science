@@ -72,3 +72,61 @@
 # Yi=β0+β1(xi−¯x)+εi,i=1,…,N with ¯x= the average of the x.
 # In this case β0 represents the height when xi=¯x, which is
 # the height of the son of an average father.
+
+# For linear models to be useful, we have to estimate the unknown βs. 
+# The standard approach in science is to find the values that 
+# minimize the distance of the fitted model to the data. 
+# The following is called the least squares (LS) equation 
+# and we will see it often in this chapter. This quantity is called 
+# the residual sum of squares (RSS). Once we find the values 
+# that minimize the RSS, we will call the values the least 
+# squares estimates (LSE) and denote them with β0 and β1. Let’s
+# demonstrate this with the previously defined dataset:
+
+library(HistData)
+library(dslabs)
+library(tidyverse)
+data("GaltonFamilies")
+set.seed(1983)
+galton_heights <- GaltonFamilies %>%
+  filter(gender == "male") %>%
+  group_by(family) %>%
+  sample_n(1) %>%
+  ungroup() %>%
+  select(father, childHeight) %>%
+  rename(son = childHeight)
+
+# Let’s write a function that computes the RSS for
+# any pair of values β0 and β1.
+
+rss = function(beta0, beta1, data) {
+  residual = galton_heights$son - (beta0+beta1*galton_heights$father)
+  return(sum(residual^2))
+}
+
+# So for any pair of values, we get an RSS. Here is a plot 
+# of the RSS as a function of β1 when we keep the β0 fixed at 25.
+
+beta1 = seq(0, 1, len = (nrow(galton_heights)))
+rss_estimates = sapply(beta1, rss, beta0 = 25)
+results = data.frame(beta1 = beta1, rss = rss_estimates)
+
+results %>%
+  ggplot(aes(beta1, rss)) + 
+  geom_line()
+
+# We can see a clear minimum for β1 at around 0.65. However,
+# this minimum for β1 is for when β0=25, a value we 
+# arbitrarily picked. We don’t know if (25, 0.65) is the 
+# pair that minimizes the equation across all possible pairs.
+
+# Trial and error is not going to work in this case. 
+# We could search for a minimum within a fine grid of β0 
+# and β1 values, but this is unnecessarily time-consuming 
+# since we can use calculus: take the partial derivatives,
+# set them to 0 and solve for β1 and β2. Of course, if
+# we have many parameters, these equations can get rather
+# complex. But there are functions in R that do these 
+# calculations for us. We will learn these next. To 
+# learn the mathematics behind this, you can consult a
+# book on linear models.
