@@ -108,7 +108,7 @@ rss = function(beta0, beta1, data) {
 # of the RSS as a function of β1 when we keep the β0 fixed at 25.
 
 beta1 = seq(0, 1, len = (nrow(galton_heights)))
-rss_estimates = sapply(beta1, rss, beta0 = 25)
+rss_estimates = sapply(beta1, rss, beta0 = 36)
 results = data.frame(beta1 = beta1, rss = rss_estimates)
 
 results %>%
