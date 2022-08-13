@@ -218,5 +218,11 @@ fit = lm(singles ~ mean_singles, data = all_years)
 # the slope of the fit?
 summary(fit)
 
+# Fit a linear model to predict 2002 bases on balls given 
+# 1999-2001 mean_bb.
 
+fit = lm(bb ~ mean_bb, data = all_years)
 
+# What is the coefficient of mean_bb, 
+# the slope of the fit?
+summary(fit)

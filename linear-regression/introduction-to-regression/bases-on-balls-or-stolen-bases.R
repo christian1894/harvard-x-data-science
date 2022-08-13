@@ -24,10 +24,8 @@ ds_theme_set()
 # The visualization of choice when exploring the relationship 
 # between two variables like home runs and runs is a scatterplot.
 
-Teams %>% filter(yearID %in% 1961:2001) %>%
-  mutate(HR_per_game = HR / G, R_per_game = R / G) %>%
-  ggplot(aes(HR_per_game, R_per_game)) + 
-  geom_point(alpha = 0.5)
+dat = Teams %>% filter(yearID %in% 1961:2001) %>%
+  mutate(HR_per_game = HR / G, R_per_game = R / G)
 
 # The plot shows a strong association: teams with more HRs
 # tend to score more runs. Now let’s examine the relationship 
